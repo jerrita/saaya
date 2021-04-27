@@ -1,0 +1,100 @@
+from __future__ import annotations
+
+from saaya.permission import Permission
+from saaya.logger import logger
+from typing import TYPE_CHECKING
+
+import json
+import requests
+import time
+
+if TYPE_CHECKING:
+    from saaya.message import Message, Source
+    from saaya.member import Group, Friend
+
+
+class Protocol:
+    retry = 5
+
+    def __init__(self, addr: str, authKey: str, retry: int = 5):
+        self.addr = addr
+        self.baseUrl = addr if addr.startswith('http://') else 'http://' + addr
+        self.mirai_version = self.json_query('/about', post=False)['data']['version']
+        self.retry = retry
+        logger.info(f'Connected to mirai-http backend. The version is {self.mirai_version}.')
+        self.session = self.json_query('/auth', {'authKey': authKey})['session']
+        # self.session = '8zHZb8kg'
+        logger.info(f'Authed. Your session is {self.session}')
+
+    def verify(self, qq):
+        res = self.json_query('/verify', {
+            'sessionKey': self.session,
+            'qq': qq
+        })
+        if res['code'] == 0:
+            logger.info(f'Successfully bind on qq {qq}.')
+
+    def send_friend_message(self, friend: Friend, msg: Message):
+        res = self.json_query('/sendFriendMessage', {
+            'sessionKey': self.session,
+            'target': friend.uid,
+            'messageChain': msg.getChain()
+        })
+
+        if res['code'] == 0:
+            logger.info(f'{friend.remark}({friend.uid}) <- {msg.getContent(console=True)}')
+        else:
+            logger.error(f'Send message to {friend.remark}({friend.uid}) failed with code {res["code"]}')
+
+    def send_group_message(self, group: Group, msg: Message):
+        res = self.json_query('/sendGroupMessage', {
+            'sessionKey': self.session,
+            'target': group.uid,
+            'messageChain': msg.getChain()
+        })
+        if res['code'] == 0:
+            logger.info(f'{group.name}({group.uid}) <- {msg.getContent(console=True)}')
+        else:
+            logger.warn(f'Send message to {group.name}({group.uid}) failed with code {res["code"]}')
+
+    def get_message_from_source(self, source: Source):
+        res = self.json_query(f'/messageFromId?sessionKey={self.session}&id={source.messageId}', post=False)
+        if res['code']:
+            logger.error(f'Get message from source error: ')
+        pass
+
+    def unmute(self, target: Group, memberId: int):
+        """
+        解除群成员禁言
+
+        :param target: 群号
+        :param memberId: 成员qq
+        :return:
+        """
+        if target.permission != Permission.ADMINISTRATOR.name:
+            logger.error(f'Unmute error: Permission denied.')
+            return -1
+
+        res = self.json_query('/unmute', {
+            'sessionKey': self.session,
+            'target': target.uid,
+            'memberId': memberId
+        })
+
+        if res['code'] == 0:
+            logger.info(f'Unmuted {memberId} from {target.name}({target.uid})')
+        else:
+            logger.error(f'Unmute error: {res["msg"]}')
+
+    def json_query(self, addr: str, data: dict = None, post: bool = True) -> dict:
+        try:
+            res = requests.post(self.baseUrl + addr, json=data) if post else requests.get(self.baseUrl + addr)
+            res = json.loads(res.text)
+            if res['code']:
+                logger.error(f'{addr} got code: {res["code"]}')
+            return res
+        except Exception as e:
+            logger.error(e)
+            logger.info(f'Retry after {self.retry}s...')
+            time.sleep(self.retry)
+            return self.json_query(addr, data, post)
