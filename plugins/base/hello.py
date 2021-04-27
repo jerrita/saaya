@@ -6,5 +6,5 @@ from private import test_groups
 @PluginManager.registerEvent('GroupMessage')
 def hello(event: GroupMessage):
     if event.group.uid in test_groups:
-        if event.message.getContent() == 'hello':
-            event.group.sendMessage('world!')
+        if event.message.getContent() == 'ping':
+            event.group.sendMessage('pong')

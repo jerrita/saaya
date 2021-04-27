@@ -1,8 +1,8 @@
 # Saaya Framework on Mirai
 
-> 警告：本框架仅为个人学习使用，功能性不强，而且会有很多 `bug`，生产环境建议使用其他成熟的框架
->
 > 目前最新版本为： `0.2.1 dev`
+> 
+> 此框架目前正在开发中，请暂时使用 `PyCharm` 以获得较好的代码内文档体验
 
 `Saaya`  是一个为了与群内 `cdd` 对抗而开发的基于 `mirai-api-http` 的轻量机器人框架，使用语言为 `Python`
 
@@ -56,8 +56,8 @@ from private import test_groups
 @PluginManager.registerEvent('GroupMessage')
 def hello(event: GroupMessage):
     if event.group.uid in test_groups:
-        if event.message.getContent() == 'hello':
-            event.group.sendMessage('world!')
+        if event.message.getContent() == 'ping':
+            event.group.sendMessage('pong')
 ```
 
 
@@ -68,7 +68,7 @@ def hello(event: GroupMessage):
 
 ![img.png](img.png)
 
-可以看到插件已经成功加载，并且机器人回复了你 `world!`
+可以看到插件已经成功加载，并且机器人回复了你 `pong`
 
 
 
