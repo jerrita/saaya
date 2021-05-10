@@ -100,6 +100,21 @@ class GroupRecallEvent(Event):
                     f'{self.source.getContent()}')
 
 
+class MemberCardChangeEvent(Event):
+    def __init__(self, event: Event, origin: str, new: str, member: GroupMember, group: Group,
+                 operator: [GroupMember, None]):
+        self.origin = origin
+        self.new = new
+        self.member = member
+        self.group = group
+        self.operator = operator
+        super().__init__(event.bot, event.type)
+
+    def illustrate(self):
+        logger.info(f'{self.group.name}({self.group.uid}) -> '
+                    f'{self.member.uid} 的名称从 {self.origin} 变更为 {self.new}')
+
+
 class Listener:
     def __init__(self, bot: Bot):
         self.bot = bot
@@ -151,6 +166,28 @@ class Listener:
             source = Source(msgId=data['messageId'], time=data['time'])
 
             event = GroupRecallEvent(event, operator, group, source)
+
+        if event.type == 'MemberCardChangeEvent':
+            group = Group(self.bot,
+                          qq=data['member']['group']['id'],
+                          name=data['member']['group']['name'],
+                          permission=data['member']['group']['permission'])
+            member = GroupMember(self.bot,
+                                 qq=data['member']['id'],
+                                 name=data['member']['memberName'],
+                                 permission=data['member']['permission'])
+            if data['operator']:
+                operator = GroupMember(self.bot,
+                                       qq=data['operator']['id'],
+                                       name=data['operator']['memberName'],
+                                       permission=data['operator']['permission'])
+            else:
+                operator = None
+
+            origin = data['origin']
+            new = data['new']
+
+            event = MemberCardChangeEvent(event, origin, new, member, group, operator)
 
         PluginManager.broadCast(event)
 

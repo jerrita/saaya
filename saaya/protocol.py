@@ -84,7 +84,34 @@ class Protocol:
         if res['code'] == 0:
             logger.info(f'Unmuted {memberId} from {target.name}({target.uid})')
         else:
-            logger.error(f'Unmute error: {res["msg"]}')
+            logger.warn(f'Unmute error: {res["msg"]}')
+
+    def change_member_info(self, group: Group, target: int, name=None, specialTitle=None):
+        """
+        更改群员信息
+
+        :param group: 群
+        :param target: 成员
+        :param name: 需要更改的群名片（可选）
+        :param specialTitle: 给予的头衔（可选）
+        :return:
+        """
+        data = {
+            'sessionKey': self.session,
+            'target': group.uid,
+            'memberId': target,
+            'info': {}
+        }
+        if name:
+            data['info']['name'] = name
+        if specialTitle:
+            data['info']['specialTitle'] = specialTitle
+        res = self.json_query('/memberInfo', data)
+
+        if res['code'] == 0:
+            logger.info(f'Change {target} info from {group.name}({group.uid}) to ' + json.dumps(data['info']))
+        else:
+            logger.error(f'Member info change error: {res["msg"]}')
 
     def json_query(self, addr: str, data: dict = None, post: bool = True) -> dict:
         try:

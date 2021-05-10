@@ -15,9 +15,11 @@ class BaseManager:
     def __init__(self):
         # 手动写入是为了防止注册某些未实现的事件
         self.plugins = {
+            'OnLoad': [],  # 插件注册时运行
             'GroupMessage': [],
             'GroupRecallEvent': [],
-            'FriendMessage': []
+            'FriendMessage': [],
+            'MemberCardChangeEvent': []
         }
 
     def bind(self, bot: Bot):

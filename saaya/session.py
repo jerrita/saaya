@@ -5,13 +5,16 @@ from saaya.protocol import Protocol
 from saaya.utils import PluginManager
 from saaya.logger import logger
 
+from saaya.member import Group, Friend
+from saaya.message import Message
+from saaya.permission import Permission
+
 import asyncio
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from saaya.member import Group, Friend
-    from saaya.message import Message
+    pass
 
 
 class Bot:
@@ -35,7 +38,7 @@ class Bot:
         """
         self.protocol.send_friend_message(friend, msg)
 
-    def sendGroupMessage(self, group: Group, msg: Message):
+    def sendGroupMessage(self, group: Union[int, Group], msg: Union[list, Message, str]):
         """
         发送群消息
 
@@ -43,6 +46,14 @@ class Bot:
         :param msg: 消息
         :return:
         """
+        if type(group) is int:
+            group = Group(self, group, 'Group', Permission.MEMBER)
+
+        if type(msg) is not Message:
+            t = Message([])
+            t.build(msg)
+            msg = t
+
         self.protocol.send_group_message(group, msg)
 
     def unmute(self, group: Group, target: int):
@@ -55,12 +66,33 @@ class Bot:
         """
         self.protocol.unmute(group, target)
 
-    @staticmethod
-    def registerPlugins(plugins: list):
+    def changeMemberInfo(self, group: Union[Group, int], target: int, name=None, specialTitle=None):
+        """
+        更改群员信息
+
+        :param group: 群
+        :param target: 成员
+        :param name: 需要更改的群名片（可选）
+        :param specialTitle: 给予的头衔（可选）
+        :return:
+        """
+        if type(group) is int:
+            group = Group(self, group, 'Group', Permission.MEMBER)
+        self.protocol.change_member_info(group, target, name, specialTitle)
+
+    def registerPlugins(self, plugins: list):
         for plugin in plugins:
             logger.info(f'Loading plugin: {plugin}')
             try:
                 __import__(plugin)
+            except Exception as e:
+                logger.error(e)
+
+        # 处理 OnLoad
+        for func in PluginManager.plugins['OnLoad']:
+            try:
+                logger.info(f'Running OnLoad func from {func}')
+                func(self)
             except Exception as e:
                 logger.error(e)
 
