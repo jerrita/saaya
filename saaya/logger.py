@@ -1,5 +1,6 @@
 import logging
 import colorlog
+from saaya import config
 
 log_colors_config = {
     'DEBUG': 'white',  # cyan white
@@ -9,12 +10,12 @@ log_colors_config = {
     'CRITICAL': 'bold_red',
 }
 
-logger = logging.getLogger('brickbot_logger')
+logger = logging.getLogger('saaya_logger')
 
 # 输出到控制台
 console_handler = logging.StreamHandler()
 # 输出到文件
-file_handler = logging.FileHandler(filename='saaya.log', mode='a', encoding='utf8')
+file_handler = logging.FileHandler(filename=config.base['log_path'], mode='a', encoding='utf8')
 
 console_handler.setLevel(logging.DEBUG)
 file_handler.setLevel(logging.INFO)

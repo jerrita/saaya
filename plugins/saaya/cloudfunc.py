@@ -29,7 +29,7 @@ def FuncWrapper(func):
             warn_limit[key] = time.time()
             limits[key] = 3
 
-        if limits[key] >= 0:
+        if limits[key] > 0:
             limits[key] -= 1
             warn_limit[key] = time.time()
             func(*args, **kwargs)
