@@ -14,7 +14,7 @@ flag = 'flag{fake_flag}'
 @PluginManager.registerEvent('OnLoad')
 def bd(bot: Bot):
     config.feature['RepeatEnable'] = False
-    # bot.sendGroupMessage(wsm[0], 'CloudFunc reloaded')
+    bot.sendGroupMessage(wsm[0], 'CloudFunc reloaded')
 
 
 @PluginManager.registerEvent('GroupMessage')
@@ -23,6 +23,9 @@ def func_plug(event: GroupMessage):
         if 'clear' in event.message.getContent():
             funcList.clear()
             event.group.sendMessage('Cleared')
+
+        if 'cf_status' == event.message.getContent():
+            event.group.sendMessage('Running.')
 
         try:
             for func in funcList:

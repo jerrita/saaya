@@ -47,6 +47,10 @@ class Bot:
         :param msg: 消息
         :return:
         """
+        if type(msg) not in [list, Message, str]:
+            logger.warn('非法消息！')
+            return
+
         if type(group) is int:
             group = Group(self, group, 'Group', Permission.MEMBER)
 

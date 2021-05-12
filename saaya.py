@@ -10,8 +10,8 @@ if __name__ == '__main__':
     bot.bind(botqq)  # 登陆 Bot （注意：需要主程序已登陆对应 qq）
 
     bot.registerPlugins([
-        # 'plugins.turing.main',
-        # 'plugins.saaya.misc'
+        'plugins.turing.main',
+        'plugins.saaya.misc',
         # 'plugins.test.friend'
         # 'plugins.saaya.fhr'
         'plugins.saaya.cloudfunc'
