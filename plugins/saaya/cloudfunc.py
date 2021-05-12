@@ -3,12 +3,40 @@ from saaya.event import GroupMessage
 from saaya.session import Bot
 from saaya.message import *
 from saaya import config
+from functools import wraps
+import time
 from private import wsm
 
 funcList = []
-ft = ['os', 'system', 'so', 'import', '__import__', 'open', 'while', '::-1', '__classes__']
+ft = ['os', 'system', 'so', 'import', '__import__', 'open', 'while', '::-1', '__classes__', 'lambda', 'builtin']
 # 真正的 flag 在哪呢？
 flag = 'flag{fake_flag}'
+
+
+def FuncWrapper(func):
+    limits = {}
+    warn_limit = {}
+
+    @wraps(func)
+    def wrapped_func(*args, **kwargs):
+        key = func.__name__
+        if key not in limits:
+            limits[key] = 3
+            warn_limit[key] = time.time()
+
+        # 并非恶意调用，回满
+        if time.time() - warn_limit[key] > 10:
+            warn_limit[key] = time.time()
+            limits[key] = 3
+
+        if limits[key] >= 0:
+            limits[key] -= 1
+            warn_limit[key] = time.time()
+            func(*args, **kwargs)
+        else:
+            logger.warn('监测到恶意调用函数，终止.')
+
+    return wrapped_func
 
 
 @PluginManager.registerEvent('OnLoad')
@@ -48,6 +76,7 @@ def func_plug(event: GroupMessage):
                             fla = True
                             event.group.sendMessage('WAF！爬')
                     if not fla:
+                        func = func.replace('def', '@FuncWrapper\ndef')
                         funcList.append(compile(func, '', 'exec'))
                         event.group.sendMessage('Plugin plugged.')
                 else:
