@@ -57,7 +57,7 @@ class Plain(ChainObj):
 
 
 class At(ChainObj):
-    def __init__(self, source: dict, target: int = None, display: str = None):
+    def __init__(self, source: dict = None, target: int = None, display: str = None):
         self.target: int = source['target'] if not target else target
         self.display: str = source['display'] if not display else display
         super().__init__('At')

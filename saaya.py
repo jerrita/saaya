@@ -13,7 +13,8 @@ if __name__ == '__main__':
         # 'plugins.turing.main',
         # 'plugins.saaya.misc'
         # 'plugins.test.friend'
-        'plugins.saaya.fhr'
+        # 'plugins.saaya.fhr'
+        'plugins.saaya.cloudfunc'
     ])  # 插件注册，规范如上
 
     bot.loop()  # 开始监听事件循环
