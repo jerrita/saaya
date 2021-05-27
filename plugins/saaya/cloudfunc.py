@@ -8,7 +8,7 @@ import time
 from private import wsm
 
 funcList = []
-ft = ['os', 'system', 'so', 'import', '__import__', 'open', 'while', '::-1', '__classes__', 'lambda', 'builtin']
+ft = ['os', 'system', 'so', 'import', 'open', 'while', '::-1', '__', 'lambda', 'builtin', 'exec', 'eval']
 # 真正的 flag 在哪呢？
 flag = 'flag{fake_flag}'
 

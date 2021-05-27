@@ -7,5 +7,6 @@ services:
       - 8080:8080
     volumes:
       - ./:/app:ro
+      - /var/log/saaya.log:/var/log/saaya.log
     working_dir: /app
     command: [ 'python', 'main.py' ]

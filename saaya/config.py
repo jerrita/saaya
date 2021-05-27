@@ -1,5 +1,5 @@
 base = {
-    'log_path': 'saaya.log'
+    'log_path': '/var/log/saaya.log'
 }
 
 feature = {
