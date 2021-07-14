@@ -1,3 +1,4 @@
 requests
 websockets
 colorlog
+sanic

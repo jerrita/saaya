@@ -1,5 +1,7 @@
+import platform
+
 base = {
-    'log_path': '/var/log/saaya.log'
+    'log_path': '/var/log/saaya.log' if platform.system() != 'Windows' else 'saaya.log'
 }
 
 feature = {

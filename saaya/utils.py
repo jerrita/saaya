@@ -36,6 +36,15 @@ class BaseManager:
                     logger.error(e)
 
     def registerEvent(self, eventName: str):
+        """
+        参见 saaya.event \n
+        注册事件，除生命周期事件以外，传入参数均为 Event。\n
+        生命周期事件类型：OnLoad
+        生命周期事件所给参数为: Bot
+
+        :param eventName: 事件名称
+        :return:
+        """
         def plugin(func):
             logger.debug(f'Registering {func} on {eventName}')
             self.plugins[eventName].append(func)

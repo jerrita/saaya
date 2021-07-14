@@ -29,7 +29,7 @@ class Bot:
         self.protocol.verify(qq)
         PluginManager.bind(self)
 
-    def sendFriendMessage(self, friend: Friend, msg: Message):
+    def sendFriendMessage(self, friend: Union[int, Friend], msg: Union[list, Message, str]):
         """
         发送好友消息
 
@@ -37,6 +37,14 @@ class Bot:
         :param msg: 消息
         :return:
         """
+        if type(friend) is int:
+            friend = Friend(self, friend, 'Friend', 'Nickname')
+
+        if type(msg) is not Message:
+            t = Message([])
+            t.build(msg)
+            msg = t
+
         self.protocol.send_friend_message(friend, msg)
 
     def sendGroupMessage(self, group: Union[int, Group], msg: Union[list, Message, str]):
@@ -101,7 +109,7 @@ class Bot:
         # 处理 OnLoad
         for func in PluginManager.plugins['OnLoad']:
             try:
-                logger.info(f'Running OnLoad func from {func}')
+                logger.info(f'Calling OnLoad func from {func}')
                 func(self)
             except Exception as e:
                 logger.error(e)
