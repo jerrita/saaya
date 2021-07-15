@@ -28,7 +28,7 @@ def getResponse(sentence, uid):
 
 
 @PluginManager.registerEvent('GroupMessage')
-def turing(event: GroupMessage):
+async def turing(event: GroupMessage):
     if event.group.uid in test_groups:
         msg = event.message.getContent()
         if msg.startswith(' '):

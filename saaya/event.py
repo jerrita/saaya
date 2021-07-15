@@ -119,7 +119,7 @@ class Listener:
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    def processor(self, msg):
+    async def processor(self, msg):
         event = Event(self.bot)
         logger.debug(msg)
 
@@ -189,11 +189,11 @@ class Listener:
 
             event = MemberCardChangeEvent(event, origin, new, member, group, operator)
 
-        PluginManager.broadCast(event)
+        await PluginManager.broadCast(event)
 
     async def loop(self):
         uri = f'ws://{self.bot.protocol.addr}/all?sessionKey={self.bot.protocol.session}'
         async with websockets.connect(uri) as ws:
             while True:
                 msg = await ws.recv()
-                self.processor(msg)
+                await self.processor(msg)

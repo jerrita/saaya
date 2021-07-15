@@ -1,4 +1,5 @@
 # saaya 通知板
+import os
 
 from saaya.session import Bot
 from saaya.utils import PluginManager
@@ -7,12 +8,14 @@ from saaya.logger import logger
 from sanic import Sanic, Request
 from sanic.response import text
 
-session: Bot
 app = Sanic(__name__)
+
+session: Bot
 
 
 @app.route("/notice")
 async def notice(req: Request):
+    global session
     parm = req.args
 
     notes = 'None' if 'notice' not in parm else parm['notice'][0]
@@ -42,4 +45,9 @@ def notice(bot: Bot):
     global session
     session = bot
     logger.info('Starting notice board...')
-    app.run(host='0.0.0.0', port=31284)
+
+    pid = os.fork()
+    if pid == 0:
+        app.run('0.0.0.0', 31284)
+
+

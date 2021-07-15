@@ -1,6 +1,6 @@
 # Saaya Framework on Mirai
 
-> 目前最新版本为： `0.2.1 dev`
+> 目前最新版本为： `0.2.3 dev`
 > 
 > 此框架目前正在开发中，请暂时使用 `PyCharm` 以获得较好的代码内文档体验
 
@@ -54,7 +54,7 @@ from private import test_groups
 
 
 @PluginManager.registerEvent('GroupMessage')
-def hello(event: GroupMessage):
+async def hello(event: GroupMessage):
     if event.group.uid in test_groups:
         if event.message.getContent() == 'ping':
             event.group.sendMessage('pong')

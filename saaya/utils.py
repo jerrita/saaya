@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 from saaya.logger import logger
 from typing import List, Dict, TYPE_CHECKING
 
@@ -25,15 +27,17 @@ class BaseManager:
     def bind(self, bot: Bot):
         self.bot = bot
 
-    def broadCast(self, event: Event):
+    async def broadCast(self, event: Event):
         event_name = event.type
         if event_name in self.plugins:
             logger.debug(f'BroadCast {event} to {self.plugins[event_name]}')
+            task_list = []
             for plugin in self.plugins[event_name]:
-                try:
-                    plugin(event)
-                except Exception as e:
-                    logger.error(e)
+                task_list.append(asyncio.create_task(plugin(event)))
+            try:
+                await asyncio.wait(task_list)
+            except Exception as e:
+                logger.error(e)
 
     def registerEvent(self, eventName: str):
         """
@@ -45,6 +49,7 @@ class BaseManager:
         :param eventName: 事件名称
         :return:
         """
+
         def plugin(func):
             logger.debug(f'Registering {func} on {eventName}')
             self.plugins[eventName].append(func)

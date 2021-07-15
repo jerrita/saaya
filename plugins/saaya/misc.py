@@ -5,7 +5,7 @@ from private import wsm, cdd
 
 
 @PluginManager.registerEvent('GroupMessage')
-def reply(event: GroupMessage):
+async def reply(event: GroupMessage):
     if event.group.uid in wsm:
         if event.message.getContent() == 'saaya':
             event.group.sendMessage('kirakirakira')

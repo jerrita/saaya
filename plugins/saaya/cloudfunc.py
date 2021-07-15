@@ -40,13 +40,13 @@ def FuncWrapper(func):
 
 
 @PluginManager.registerEvent('OnLoad')
-def bd(bot: Bot):
+async def bd(bot: Bot):
     config.feature['RepeatEnable'] = False
     bot.sendGroupMessage(wsm[0], 'CloudFunc reloaded')
 
 
 @PluginManager.registerEvent('GroupMessage')
-def func_plug(event: GroupMessage):
+async def func_plug(event: GroupMessage):
     if event.group.uid in wsm:
         if 'clear' in event.message.getContent():
             funcList.clear()
