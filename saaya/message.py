@@ -74,6 +74,7 @@ class Quote(ChainObj):
     引用消息类型，默认在非控制台下返回空值\n
     可通过是否存在 `Message.quote` 判断该消息是否为其他消息的引用
     """
+
     def __init__(self, source: dict = None, msgId: int = None, senderId: int = None, origin: Message = None):
         self.sourceId: int = source['id'] if not msgId else msgId
         self.senderId: int = source['senderId'] if not senderId else senderId
@@ -88,14 +89,15 @@ class Quote(ChainObj):
 
 
 class Image(ChainObj):
-    def __init__(self, source: dict):
-        self.imageId = source['imageId']
-        self.url = source['url']
+    def __init__(self, source: dict, ignoreId: bool = False, url: str = None):
+        if not ignoreId:
+            self.imageId = source['imageId']
+        self.url = source['url'] if not url else url
         super().__init__('Image')
 
     def getContent(self, console: bool = False) -> str:
         if console:
-            return f'[Image: {self.imageId}]'
+            return f'[Image: {self.url if not "imageId" in vars(self) else self.imageId}]'
         else:
             return '[图片]'
 
@@ -105,12 +107,13 @@ class Message:
     chain: List[ChainObj]
     quote: Union[Quote, None]  # 这条消息是否为某一条消息的回复
 
-    def __init__(self, serialize: list, fromSource: bool = False):
+    def __init__(self, serialize: list, fromSource: bool = False, rebuild_image: bool = False):
         """
         使用序列化列表构建消息链
 
         :param serialize: 序列化字符串
         :param fromSource: 是否从消息源构建（发送消息时应为 false）
+        :param rebuild_image: 是否重建图片（忽略图片 id）
         """
         self.chain = []
         if fromSource:
@@ -125,7 +128,7 @@ class Message:
             if obj['type'] == 'Plain':
                 self.chain.append(Plain(obj))
             if obj['type'] == 'Image':
-                self.chain.append(Image(obj))
+                self.chain.append(Image(obj, ignoreId=True if rebuild_image else False))
             if obj['type'] == 'At':
                 self.chain.append(At(obj))
             if obj['type'] == 'Quote':

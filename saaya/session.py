@@ -94,6 +94,17 @@ class Bot:
         tmp_id = messageId if type(messageId) is int else messageId.messageId
         self.protocol.recall_message(tmp_id)
 
+    def getMessage(self, message: Union[int, Source], rebuild_image: bool = False) -> Union[Message, None]:
+        """
+        尝试通过缓存获取消息内容
+
+        :param rebuild_image: 是否重建图片（忽略图片 id）
+        :param message: 待恢复的 Source 或 MessageId
+        :return:
+        """
+        tmp_source = Source(msgId=message) if type(message) is int else message
+        return self.protocol.get_message_from_source(tmp_source, rebuild_image=rebuild_image)
+
     def changeMemberInfo(self, group: Union[Group, int], target: int, name=None, specialTitle=None):
         """
         更改群员信息

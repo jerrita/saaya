@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from .permission import Permission
 from .logger import logger
-from typing import TYPE_CHECKING
+from .message import Message
+from typing import TYPE_CHECKING, Union
 
 import json
 import requests
 import time
 
 if TYPE_CHECKING:
-    from saaya.message import Message, Source
+    from saaya.message import Source
     from saaya.member import Group, Friend
 
 
@@ -73,11 +74,15 @@ class Protocol:
         else:
             logger.warn(f'Recall message {target} failed')
 
-    def get_message_from_source(self, source: Source):
+    def get_message_from_source(self, source: Source, rebuild_image: bool = False) -> Union[Message, None]:
         res = self.json_query(f'/messageFromId?sessionKey={self.session}&id={source.messageId}', post=False)
         if res['code']:
-            logger.error(f'Get message from source error: ')
-        pass
+            logger.error(f'Get message from source error with code: {res["code"]}')
+            return None
+        else:
+            msg = Message(serialize=res['data']['messageChain'], fromSource=True, rebuild_image=rebuild_image)
+            logger.debug(f'Got chain: {msg.getContent(console=True)}')
+            return msg
 
     def unmute(self, target: Group, memberId: int):
         """

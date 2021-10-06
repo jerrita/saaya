@@ -1,7 +1,19 @@
 from saaya.utils import PluginManager
 from saaya.event import GroupMessage, GroupRecallEvent
-from saaya.message import At
+from saaya.message import At, Message
 from private import wsm, cdd
+
+msg_stack = {}
+
+
+@PluginManager.registerEvent('GroupRecallEvent')
+async def recall_handler(event: GroupRecallEvent):
+    if event.group.uid not in msg_stack:
+        msg_stack[event.group.uid] = []
+
+    msg = event.bot.getMessage(event.source)
+    if type(msg) is Message:
+        msg_stack[event.group.uid].append(msg)
 
 
 @PluginManager.registerEvent('GroupMessage')
@@ -26,3 +38,13 @@ async def reply(event: GroupMessage):
 
             if flag:
                 event.group.sendMessage(f'已清除 [{flag}] 的负面状态')
+
+        cmd = event.message.getContent().split(' ')
+        if cmd[0] == 'back':
+            if event.group.uid in msg_stack and len(msg_stack[event.group.uid]):
+                pl = 1 if len(cmd) < 2 or not cmd[1].isdigit() else int(cmd[1])
+                t_msg: Message = msg_stack[event.group.uid][-1 * max(min(len(msg_stack[event.group.uid]), pl), 0)]
+                print(t_msg.getChain())
+                event.group.sendMessage(t_msg)
+            else:
+                event.group.sendMessage('Stack overflow!')

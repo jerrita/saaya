@@ -39,10 +39,10 @@ def FuncWrapper(func):
     return wrapped_func
 
 
-@PluginManager.registerEvent('OnLoad')
-async def bd(bot: Bot):
-    config.feature['RepeatEnable'] = False
-    bot.sendGroupMessage(wsm[0], 'CloudFunc reloaded')
+# @PluginManager.registerEvent('OnLoad')
+# def bd(bot: Bot):
+#     config.feature['RepeatEnable'] = False
+#     bot.sendGroupMessage(wsm[0], 'CloudFunc reloaded')
 
 
 @PluginManager.registerEvent('GroupMessage')
