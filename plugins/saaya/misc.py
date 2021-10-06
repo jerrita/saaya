@@ -40,10 +40,13 @@ async def reply(event: GroupMessage):
                 event.group.sendMessage(f'已清除 [{flag}] 的负面状态')
 
         cmd = event.message.getContent().split(' ')
-        if cmd[0] == 'back' and event.sender.uid in bot_admin:
-            if event.group.uid in msg_stack and len(msg_stack[event.group.uid]):
-                pl = 1 if len(cmd) < 2 or not cmd[1].isdigit() else int(cmd[1])
-                t_msg: Message = msg_stack[event.group.uid][-1 * max(min(len(msg_stack[event.group.uid]), pl), 0)]
-                event.group.sendMessage(t_msg)
-            else:
+        if cmd[0] == 'back':
+            if event.sender.uid not in bot_admin:
                 event.group.sendMessage('Permission denied!')
+            else:
+                if event.group.uid in msg_stack and len(msg_stack[event.group.uid]):
+                    pl = 1 if len(cmd) < 2 or not cmd[1].isdigit() else int(cmd[1])
+                    t_msg: Message = msg_stack[event.group.uid][-1 * max(min(len(msg_stack[event.group.uid]), pl), 0)]
+                    event.group.sendMessage(t_msg)
+                else:
+                    event.group.sendMessage('Permission denied!')
