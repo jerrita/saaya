@@ -11,10 +11,11 @@ if __name__ == '__main__':
 
     bot.registerPlugins([
         # 'plugins.turing.main',
-        'plugins.saaya.misc',
+        # 'plugins.saaya.misc',
         # 'plugins.saaya.fhr'
         # 'plugins.saaya.cloudfunc'
-        'plugins.saaya.notice'
+        # 'plugins.saaya.notice'
+        'plugins.test.quote'
     ])  # 插件注册，规范如上
 
     bot.loop()  # 开始监听事件循环

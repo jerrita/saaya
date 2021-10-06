@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from saaya.event import Listener
-from saaya.protocol import Protocol
-from saaya.utils import PluginManager
-from saaya.logger import logger
+from .event import Listener
+from .protocol import Protocol
+from .utils import PluginManager
+from .logger import logger
 
-from saaya.member import Group, Friend
-from saaya.message import Message
-from saaya.permission import Permission
+from .member import Group, Friend
+from .message import Message, Source
+from .permission import Permission
 from saaya import config
 
 import asyncio
@@ -83,6 +83,16 @@ class Bot:
         :return:
         """
         self.protocol.unmute(group, target)
+
+    def recall(self, messageId: Union[int, Source]):
+        """
+        撤回消息
+
+        :param messageId: 待撤回消息的 MessageId
+        :return:
+        """
+        tmp_id = messageId if type(messageId) is int else messageId.messageId
+        self.protocol.recall_message(tmp_id)
 
     def changeMemberInfo(self, group: Union[Group, int], target: int, name=None, specialTitle=None):
         """

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from saaya.logger import logger
-from saaya.member import *
-from saaya.message import Message, Source
-from saaya.utils import PluginManager
+from .logger import logger
+from .member import *
+from .message import Message, Source
+from .utils import PluginManager
 import websockets
 import json
 from typing import TYPE_CHECKING, Type

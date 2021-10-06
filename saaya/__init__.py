@@ -1,4 +1,4 @@
-from saaya.logger import logger
+from .logger import logger
 import logging
 
 # 日志级别，logger 和 handler以最高级别为准，不同handler之间可以不一样，不相互影响

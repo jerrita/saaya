@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from saaya.logger import logger
+from .logger import logger
 
 from typing import List, Type, Union, TYPE_CHECKING
 
@@ -69,6 +69,24 @@ class At(ChainObj):
             return f'[At: {self.target}]'
 
 
+class Quote(ChainObj):
+    """
+    引用消息类型，默认在非控制台下返回空值\n
+    可通过是否存在 `Message.quote` 判断该消息是否为其他消息的引用
+    """
+    def __init__(self, source: dict = None, msgId: int = None, senderId: int = None, origin: Message = None):
+        self.sourceId: int = source['id'] if not msgId else msgId
+        self.senderId: int = source['senderId'] if not senderId else senderId
+        self.origin: Message = Message(serialize=source['origin']) if not origin else origin
+        super().__init__('Quote')
+
+    def getContent(self, console: bool = False) -> str:
+        if console:
+            return f'[Quote & {self.senderId}: {self.origin.getContent(console=True)}]'
+        else:
+            return ''
+
+
 class Image(ChainObj):
     def __init__(self, source: dict):
         self.imageId = source['imageId']
@@ -85,6 +103,7 @@ class Image(ChainObj):
 class Message:
     source: Source
     chain: List[ChainObj]
+    quote: Union[Quote, None]  # 这条消息是否为某一条消息的回复
 
     def __init__(self, serialize: list, fromSource: bool = False):
         """
@@ -101,6 +120,7 @@ class Message:
                 self.source = Source(serialize[0])
                 serialize.__delitem__(0)
 
+        has_quote = False
         for obj in serialize:
             if obj['type'] == 'Plain':
                 self.chain.append(Plain(obj))
@@ -108,6 +128,12 @@ class Message:
                 self.chain.append(Image(obj))
             if obj['type'] == 'At':
                 self.chain.append(At(obj))
+            if obj['type'] == 'Quote':
+                self.chain.insert(1, Quote(obj))
+                self.quote = Quote(obj)
+                has_quote = True
+        if not has_quote:
+            self.quote = None
 
     def build(self, mixed_chain: Union[list, Message, str]):
         """

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from saaya.permission import Permission
-from saaya.message import Message
+from .permission import Permission
+from .message import Message
 from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:

@@ -1,5 +1,5 @@
 from saaya.utils import PluginManager
-from saaya.event import GroupMessage
+from saaya.event import GroupMessage, GroupRecallEvent
 from saaya.message import At
 from private import wsm, cdd
 
@@ -11,6 +11,10 @@ async def reply(event: GroupMessage):
             event.group.sendMessage('kirakirakira')
         if event.sender.uid == cdd:
             event.group.sendMessage(event.message)
+
+        if event.message.quote:
+            if 'recall' in event.message.getContent():
+                event.bot.recall(messageId=event.message.quote.sourceId)
 
         if '说话' in event.message.getContent():
             flag = False

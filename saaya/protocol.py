@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from saaya.permission import Permission
-from saaya.logger import logger
+from .permission import Permission
+from .logger import logger
 from typing import TYPE_CHECKING
 
 import json
@@ -56,6 +56,22 @@ class Protocol:
             logger.info(f'{group.name}({group.uid}) <- {msg.getContent(console=True)}')
         else:
             logger.warn(f'Send message to {group.name}({group.uid}) failed with code {res["code"]}')
+
+    def recall_message(self, target: int):
+        """
+        消息撤回
+
+        :param target: MessageId
+        :return:
+        """
+        res = self.json_query('/recall', {
+            'sessionKey': self.session,
+            'target': target
+        })
+        if res['code'] == 0:
+            logger.info(f'Recalled message: {target}')
+        else:
+            logger.warn(f'Recall message {target} failed')
 
     def get_message_from_source(self, source: Source):
         res = self.json_query(f'/messageFromId?sessionKey={self.session}&id={source.messageId}', post=False)

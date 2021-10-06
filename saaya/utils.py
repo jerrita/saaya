@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 
-from saaya.logger import logger
+from .logger import logger
 from typing import List, Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -37,7 +37,8 @@ class BaseManager:
             try:
                 await asyncio.wait(task_list)
             except Exception as e:
-                logger.error(e)
+                if type(e) is not ValueError:  # 忽略空插件
+                    logger.error(f'{type(e)}: {e}')
 
     def registerEvent(self, eventName: str):
         """
