@@ -19,14 +19,15 @@ if TYPE_CHECKING:
 
 
 class Bot:
-    def __init__(self, addr: str, authKey: str):
+    def __init__(self, addr: str, verifyKey: str):
         self.qq = 0
-        self.protocol = Protocol(addr, authKey)
+        self.protocol = Protocol(addr, verifyKey)
+        self.verifyKey = verifyKey
         logger.info('Bot initialized.')
 
     def bind(self, qq):
         self.qq = qq
-        self.protocol.verify(qq)
+        self.protocol.bind(qq)
         PluginManager.bind(self)
 
     def sendFriendMessage(self, friend: Union[int, Friend], msg: Union[list, Message, str]):

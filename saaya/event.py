@@ -101,18 +101,17 @@ class GroupRecallEvent(Event):
 
 
 class MemberCardChangeEvent(Event):
-    def __init__(self, event: Event, origin: str, new: str, member: GroupMember, group: Group,
-                 operator: [GroupMember, None]):
+    def __init__(self, event: Event, origin: str, current: str,
+                 member: GroupMember, group: Group):
         self.origin = origin
-        self.new = new
+        self.current = current
         self.member = member
         self.group = group
-        self.operator = operator
         super().__init__(event.bot, event.type)
 
     def illustrate(self):
         logger.info(f'{self.group.name}({self.group.uid}) -> '
-                    f'{self.member.uid} 的名称从 {self.origin} 变更为 {self.new}')
+                    f'{self.member.uid} 的名称从 {self.origin} 变更为 {self.current}')
 
 
 class Listener:
@@ -123,7 +122,9 @@ class Listener:
         event = Event(self.bot)
         logger.debug(msg)
 
-        data: dict = json.loads(msg)
+        data: dict = json.loads(msg)['data']
+        if 'type' not in data:
+            return
         event.type = data['type']
 
         if event.type.endswith('Event'):
@@ -176,23 +177,15 @@ class Listener:
                                  qq=data['member']['id'],
                                  name=data['member']['memberName'],
                                  permission=data['member']['permission'])
-            if data['operator']:
-                operator = GroupMember(self.bot,
-                                       qq=data['operator']['id'],
-                                       name=data['operator']['memberName'],
-                                       permission=data['operator']['permission'])
-            else:
-                operator = None
-
             origin = data['origin']
-            new = data['new']
+            current = data['current']
 
-            event = MemberCardChangeEvent(event, origin, new, member, group, operator)
+            event = MemberCardChangeEvent(event, origin, current, member, group)
 
         await PluginManager.broadCast(event)
 
     async def loop(self):
-        uri = f'ws://{self.bot.protocol.addr}/all?sessionKey={self.bot.protocol.session}'
+        uri = f'ws://{self.bot.protocol.addr}/all?verifyKey={self.bot.verifyKey}&sessionKey={self.bot.protocol.session}'
         async with websockets.connect(uri) as ws:
             while True:
                 msg = await ws.recv()

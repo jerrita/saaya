@@ -49,4 +49,4 @@ async def reply(event: GroupMessage):
                     t_msg: Message = msg_stack[event.group.uid][-1 * max(min(len(msg_stack[event.group.uid]), pl), 0)]
                     event.group.sendMessage(t_msg)
                 else:
-                    event.group.sendMessage('Permission denied!')
+                    event.group.sendMessage('本群消息池为空!')

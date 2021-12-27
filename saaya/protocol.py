@@ -17,23 +17,29 @@ if TYPE_CHECKING:
 class Protocol:
     retry = 5
 
-    def __init__(self, addr: str, authKey: str, retry: int = 5):
+    def __init__(self, addr: str, verifyKey: str, retry: int = 5):
         self.addr = addr
         self.baseUrl = addr if addr.startswith('http://') else 'http://' + addr
         self.mirai_version = self.json_query('/about', post=False)['data']['version']
         self.retry = retry
         logger.info(f'Connected to mirai-http backend. The version is {self.mirai_version}.')
-        self.session = self.json_query('/auth', {'authKey': authKey})['session']
+        self.session = self.json_query('/verify', {'verifyKey': verifyKey})['session']
         # self.session = '8zHZb8kg'
-        logger.info(f'Authed. Your session is {self.session}')
+        if self.session == 'SINGLE_SESSION':
+            self.session = ''  # Single mode
+        else:
+            logger.info(f'Authed. Your session is {self.session}')
 
-    def verify(self, qq):
-        res = self.json_query('/verify', {
-            'sessionKey': self.session,
-            'qq': qq
-        })
-        if res['code'] == 0:
-            logger.info(f'Successfully bind on qq {qq}.')
+    def bind(self, qq):
+        if self.session == '':
+            logger.info('Running as Single Mode, skip bind.')
+        else:
+            res = self.json_query('/bind', {
+                'sessionKey': self.session,
+                'qq': qq
+            })
+            if res['code'] == 0:
+                logger.info(f'Successfully bind on qq {qq}.')
 
     def send_friend_message(self, friend: Friend, msg: Message):
         res = self.json_query('/sendFriendMessage', {

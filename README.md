@@ -1,6 +1,8 @@
 # Saaya Framework on Mirai
 
-> 目前最新版本为： `0.2.3 dev`
+> 目前最新版本为： `2.0.1 dev`
+> 
+> Saaya 以迁移至 mirai-api-http v2，下载时请注意版本
 > 
 > 此框架目前正在开发中，请暂时使用 `PyCharm` 以获得较好的代码内文档体验
 
@@ -27,10 +29,10 @@
 
 ```python
 from saaya.session import Bot
-from private import address, authKey, botqq
+from private import address, verifyKey, botqq
 
 if __name__ == '__main__':
-    bot = Bot(address, authKey)  # 创建一个 Bot 实例
+    bot = Bot(address, verifyKey)  # 创建一个 Bot 实例
     bot.bind(botqq)  # 登陆 Bot （注意：需要主程序已登陆对应 qq）
 
     bot.registerPlugins([
