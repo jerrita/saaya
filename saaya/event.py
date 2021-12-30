@@ -3,10 +3,10 @@ from __future__ import annotations
 from .logger import logger
 from .member import *
 from .message import Message, Source
-from .utils import PluginManager
+from .utils import PluginManager, CmdManager
 import websockets
 import json
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from saaya.session import Bot
@@ -148,6 +148,7 @@ class Listener:
             sender = GroupMember(self.bot,
                                  qq=data['sender']['id'],
                                  name=data['sender']['memberName'],
+                                 group=group,
                                  permission=data['sender']['permission'])
 
             message = Message(data['messageChain'], fromSource=True)
@@ -162,6 +163,7 @@ class Listener:
             operator = GroupMember(self.bot,
                                    qq=data['operator']['id'],
                                    name=data['operator']['memberName'],
+                                   group=group,
                                    permission=data['operator']['permission'])
 
             source = Source(msgId=data['messageId'], time=data['time'])
@@ -176,11 +178,15 @@ class Listener:
             member = GroupMember(self.bot,
                                  qq=data['member']['id'],
                                  name=data['member']['memberName'],
+                                 group=group,
                                  permission=data['member']['permission'])
             origin = data['origin']
             current = data['current']
 
             event = MemberCardChangeEvent(event, origin, current, member, group)
+
+        if event.type in ['GroupMessage', 'FriendMessage'] and CmdManager.enable:
+            CmdManager.handle_msg(event)
 
         await PluginManager.broadCast(event)
 

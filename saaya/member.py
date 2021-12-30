@@ -50,7 +50,7 @@ class Friend(BaseMember):
 
 
 class GroupMember(BaseMember):
-    def __init__(self, bot: Bot, qq: int, name: str, permission: Permission):
+    def __init__(self, bot: Bot, qq: int, name: str, group: Group, permission: Permission):
         """
         群成员
 
@@ -61,7 +61,13 @@ class GroupMember(BaseMember):
         """
         super().__init__(bot, qq)
         self.name = name
+        self.group = group
         self.permission = permission
+
+    def sendMessage(self, msg: Union[list, Message, str]):
+        msg_chain = Message([])
+        msg_chain.build(msg)
+        self.bot.sendGroupMessage(self.group, msg_chain)
 
 
 class Group(BaseMember):

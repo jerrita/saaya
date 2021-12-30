@@ -3,7 +3,7 @@ from saaya.logger import logger
 from private import address, verifyKey, botqq
 import logging
 
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 if __name__ == '__main__':
     bot = Bot(address, verifyKey)  # 创建一个 Bot 实例
@@ -14,6 +14,7 @@ if __name__ == '__main__':
         'plugins.saaya.misc',
         # 'plugins.saaya.fhr'
         'plugins.saaya.cloudfunc',
+        'plugins.saaya.gout',
         'plugins.saaya.notice'
         # 'plugins.test.quote'
     ])  # 插件注册，规范如上

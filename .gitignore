@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 private.py
 server.py
+utils.py
 .idea
 
 # C extensions

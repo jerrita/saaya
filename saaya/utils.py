@@ -3,11 +3,12 @@ from __future__ import annotations
 import asyncio
 
 from .logger import logger
-from typing import List, Dict, TYPE_CHECKING
+from .permission import Permission
+from typing import List, Dict, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from saaya.session import Bot
-    from saaya.event import Event
+    from saaya.event import Event, GroupMessage, FriendMessage
 
 
 class BaseManager:
@@ -58,4 +59,86 @@ class BaseManager:
         return plugin
 
 
+class CmdProvider:
+    """
+    CMD 管理器，独立于 PluginManager，用于回应命令
+    """
+    starter: str  # Start alphabet
+    funcs: Dict[str, Dict] = {}  # name: {alias: [], params: [], help: '', func: function, permission: Permission}
+    enable: bool = True
+    cmd_mapper: Dict[str, str]  # map of command
+
+    def __init__(self, starter='/'):
+        self.starter = starter
+        self.funcs['help'] = {
+            'alias': ['帮助'],
+            'params': [],
+            'help': '获得命令列表',
+            'func': None,
+            'permission': Permission.ALL,
+        }
+        self.gen_map()
+
+    def handle_msg(self, event: Union[GroupMessage, FriendMessage]):
+        msg = event.message.getContent()
+        if len(msg) and msg[0] == self.starter:
+            cmd = msg[1:].strip().split(' ')
+            if len(cmd):
+                logger.debug(f'Searching command: {cmd[0]}')
+                if cmd[0] in self.cmd_mapper:
+                    caller = self.cmd_mapper[cmd[0]]
+                    logger.info(f'Calling command handler: {caller}')
+                    try:
+                        if caller == 'help':
+                            self.gen_help(event)
+                        else:
+                            self.funcs[caller]['func'](event, cmd)
+                    except Exception as e:
+                        logger.error(f'Error exec command: {e}')
+
+    def gen_help(self, event: Union[GroupMessage, FriendMessage]):
+        res = ['-------CmdManager------']
+        for func in self.funcs:
+            res.append(f'{func}: {self.funcs[func]["help"]}')
+        event.sender.sendMessage('\n'.join(res))
+
+    def gen_map(self):
+        self.cmd_mapper = {}
+        for func in self.funcs:
+            self.cmd_mapper[func] = func
+            for alias in self.funcs[func]['alias']:
+                self.cmd_mapper[alias] = func
+
+    def registerCommand(self, cmd: str, alias: List[str] = None, help: str = '',
+                        permission: List[str] = None):
+        """
+        注册命令
+
+        :param permission:
+        :param help: 命令帮助
+        :param cmd: 命令名称
+        :param alias: 命令别名
+        :return:
+        """
+
+        if permission is None:
+            permission = [Permission.ALL]
+
+        def parser(func):
+            logger.info(f'Registering command {cmd}')
+            if func in self.funcs:
+                logger.warn(f'Command {func} exists! It will be overwrite!')
+            self.funcs[cmd] = {
+                'alias': alias,
+                'params': [],
+                'func': func,
+                'help': help,
+                'permission': permission,
+            }
+            self.gen_map()
+
+        return parser
+
+
 PluginManager = BaseManager()
+CmdManager = CmdProvider(starter='%')
