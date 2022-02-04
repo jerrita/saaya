@@ -90,6 +90,23 @@ class Protocol:
             logger.debug(f'Got chain: {msg.getContent(console=True)}')
             return msg
 
+    def mute(self, target: Group, memberId: int, durTime: int):
+        if target.permission != Permission.ADMINISTRATOR.name:
+            logger.error(f'Mute error: Permission denied.')
+            return -1
+
+        res = self.json_query('/mute', {
+            'sessionKey': self.session,
+            'target': target.uid,
+            'memberId': memberId,
+            'time': durTime
+        })
+
+        if res['code'] == 0:
+            logger.info(f'Muted {memberId} for {durTime}s from {target.name}({target.uid})')
+        else:
+            logger.warn(f'Mute error: {res["msg"]}')
+
     def unmute(self, target: Group, memberId: int):
         """
         解除群成员禁言

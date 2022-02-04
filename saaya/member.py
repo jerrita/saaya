@@ -84,6 +84,25 @@ class Group(BaseMember):
         self.name = name
         self.permission = permission
 
+    def mute(self, target: int, durTime: int):
+        """
+        禁言群成员
+
+        :param target: 目标
+        :param durTime: 时间，单位为秒
+        :return:
+        """
+        self.bot.mute(self, target, durTime)
+
+    def unmute(self, target: int):
+        """
+        解禁群成员
+
+        :param target: 目标
+        :return:
+        """
+        self.bot.unmute(self, target)
+
     def sendMessage(self, msg: Union[list, Message, str]):
         msg_chain = Message([])
         msg_chain.build(msg)

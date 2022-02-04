@@ -85,6 +85,17 @@ class Bot:
         """
         self.protocol.unmute(group, target)
 
+    def mute(self, group: Group, target: int, durTime: int):
+        """
+        禁言群成员
+
+        :param group: 群
+        :param target: 成员
+        :param durTime: 禁言时间，单位为秒
+        :return:
+        """
+        self.protocol.mute(group, target, durTime)
+
     def recall(self, messageId: Union[int, Source]):
         """
         撤回消息

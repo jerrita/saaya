@@ -109,7 +109,7 @@ class CmdProvider:
             for alias in self.funcs[func]['alias']:
                 self.cmd_mapper[alias] = func
 
-    def registerCommand(self, cmd: str, alias: List[str] = None, help: str = '',
+    def registerCommand(self, cmd: str, alias: List[str] = [], help: str = '',
                         permission: List[str] = None):
         """
         注册命令

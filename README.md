@@ -1,6 +1,6 @@
 # Saaya Framework on Mirai
 
-> 目前最新版本为： `2.0.1 dev`
+> 目前最新版本为： `2.0.2 dev`
 > 
 > Saaya 以迁移至 mirai-api-http v2，下载时请注意版本
 > 
@@ -21,7 +21,12 @@
 2. 参考 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) ，安装对应的插件
 3. 运行一次 `MCL` 并关闭，修改配置文件，配置 `qq` 自动登录并打开 `mirai-api-http` 的 `websocket` 选项
 
-
+### Saaya 配置
+1. pip install saaya
+2. 创建主函数 `main.py` 与插件文件夹 `plugins`
+3. 编写应用逻辑
+4. 将 Dockerfile 与 docker-compose.yaml 拖到目录中
+5. docker-compose up -d
 
 ### 你的第一个应用
 
@@ -62,6 +67,24 @@ async def hello(event: GroupMessage):
             event.group.sendMessage('pong')
 ```
 
+> Saaya v2 更新
+> 
+> 注意，你可能需要类型检查与一些判断来判明消息来源为群还是好友
+> 此外，内置了功能 %help，用来显示命令的帮助
+> 
+当然，你也可以使用 `CmdManager` 来简化命令式插件的开发
+```python
+from saaya.utils import CmdManager
+from saaya.event import GroupMessage, FriendMessage
+
+from typing import Union
+
+@CmdManager.registerCommand('hello', alias=['打招呼'], help='进行一个招呼的打')
+def hello(event: Union[GroupMessage, FriendMessage], param):
+    event.sender.sendMessage('Hello world!')
+```
+
+`CmdManager` 默认起始符号为 `%`，因此，在你无论是群聊还是私聊发送消息 `%hello` 时，`Saaya` 都会回复你 `Hello world!`
 
 
 ## Hello world
