@@ -5,7 +5,7 @@ from .protocol import Protocol
 from .utils import PluginManager
 from .logger import logger
 
-from .member import Group, Friend
+from .member import Group, Friend, GroupMember, BaseMember
 from .message import Message, Source
 from .permission import Permission
 from saaya import config
@@ -130,6 +130,43 @@ class Bot:
         if type(group) is int:
             group = Group(self, group, 'Group', Permission.MEMBER)
         self.protocol.change_member_info(group, target, name, specialTitle)
+
+    def getMemberProfile(self, group: Union[Group, int], target: int) -> BaseMember:
+        """
+        获取群员信息，(qq设置)
+
+        :param group: 群
+        :param target: 成员 qq
+        :return:
+        """
+
+        if type(group) is int:
+            group = Group(self, group, 'Group', Permission.MEMBER)
+
+        data = self.protocol.get_member_profile(group, target)
+        res = BaseMember(self, target)
+        res.name = data['nickname']
+        res.level = data['level']
+        res.email = data['email']
+        res.age = data['age']
+        res.sex = data['sex']
+
+        return res
+
+    def getMemberInfo(self, group: Union[Group, int], target: int) -> GroupMember:
+        """
+        获取群员信息，(群聊设置)
+
+        :param group:
+        :param target:
+        :return:
+        """
+        if type(group) is int:
+            group = Group(self, group, 'Group', Permission.MEMBER)
+
+        data = self.protocol.get_member_info(group, target)
+        res = GroupMember(self, target, data['memberName'], group, data['permission'])
+        return res
 
     def registerPlugins(self, plugins: list):
         for plugin in plugins:

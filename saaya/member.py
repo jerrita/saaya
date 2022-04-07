@@ -9,6 +9,12 @@ if TYPE_CHECKING:
 
 
 class BaseMember:
+    name: str
+    email: str
+    level: int
+    sex: str
+    age: int
+
     def __init__(self, bot: Bot, uid):
         """
         基础成员类
@@ -39,7 +45,7 @@ class Friend(BaseMember):
         :param nickname: 昵称
         :param remark: 备注
         """
-        self.nickname = nickname
+        self.name = nickname
         self.remark = remark
         super().__init__(bot, uid)
 
@@ -50,6 +56,7 @@ class Friend(BaseMember):
 
 
 class GroupMember(BaseMember):
+
     def __init__(self, bot: Bot, qq: int, name: str, group: Group, permission: Permission):
         """
         群成员

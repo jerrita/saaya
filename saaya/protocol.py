@@ -14,6 +14,8 @@ if TYPE_CHECKING:
     from saaya.member import Group, Friend
 
 
+# doc: https://docs.mirai.mamoe.net/mirai-api-http/api/API.html
+
 class Protocol:
     retry = 5
 
@@ -157,11 +159,33 @@ class Protocol:
         else:
             logger.error(f'Member info change error: {res["msg"]}')
 
+    def get_member_profile(self, group: Group, target: int):
+        """
+        获取群成员资料 (qq设置)
+
+        :param group:
+        :param target:
+        :return:
+        """
+        return self.json_query(f'/memberProfile?sessionKey={self.session}&target={group.uid}&memberId={target}',
+                               post=False)
+
+    def get_member_info(self, group: Group, target: int):
+        """
+        获取群成员资料 (群聊设置)
+
+        :param group:
+        :param target:
+        :return:
+        """
+        return self.json_query(f'/memberInfo?sessionKey={self.session}&target={group.uid}&memberId={target}',
+                               post=False)
+
     def json_query(self, addr: str, data: dict = None, post: bool = True) -> dict:
         try:
             res = requests.post(self.baseUrl + addr, json=data) if post else requests.get(self.baseUrl + addr)
             res = json.loads(res.text)
-            if res['code']:
+            if 'code' in res and res['code']:
                 logger.error(f'{addr} got code: {res["code"]}')
             return res
         except Exception as e:
