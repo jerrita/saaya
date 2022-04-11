@@ -36,6 +36,12 @@ class ChainObj:
 
 class Source(ChainObj):
     def __init__(self, source: dict = None, msgId: int = None, time: int = None):
+        if source is None:
+            source = {
+                'id': 0,
+                'time': 0
+            }
+            logger.warn('Source Constructor: source is empty!')
         self.messageId = source['id'] if not msgId else msgId
         self.timeStamp = source['time'] if not time else time
         super().__init__('Source')
@@ -58,6 +64,12 @@ class Plain(ChainObj):
 
 class At(ChainObj):
     def __init__(self, source: dict = None, target: int = None, display: str = None):
+        if source is None:
+            source = {
+                'target': 0,
+                'display': ''
+            }
+            logger.warn('At Constructor: source is empty!')
         self.target: int = source['target'] if not target else target
         self.display: str = source['display'] if not display else display
         super().__init__('At')
@@ -76,6 +88,13 @@ class Quote(ChainObj):
     """
 
     def __init__(self, source: dict = None, msgId: int = None, senderId: int = None, origin: Message = None):
+        if source is None:
+            logger.warn('Quote Constructor: source is empty!')
+            source = {
+                'id': 0,
+                'senderId': 0,
+                'origin': []
+            }
         self.sourceId: int = source['id'] if not msgId else msgId
         self.senderId: int = source['senderId'] if not senderId else senderId
         self.origin: Message = Message(serialize=source['origin']) if not origin else origin

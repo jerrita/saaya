@@ -5,6 +5,7 @@ __pycache__/
 private.py
 server.py
 utils.py
+build.sh
 .idea
 
 # C extensions

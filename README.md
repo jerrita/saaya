@@ -1,6 +1,6 @@
 # Saaya Framework on Mirai
 
-> 目前最新版本为： `2.0.2 dev`
+> 目前最新版本为： `2.0.4 dev`
 > 
 > Saaya 以迁移至 mirai-api-http v2，下载时请注意版本
 > 

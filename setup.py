@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='saaya',
-    version='2.0.2',
+    version='2.0.4',
     author='Jerrita',
     author_email='je5r1ta@icloud.com',
     description='Saaya is a Python framework based on Mirai',
