@@ -45,7 +45,7 @@ class Friend(BaseMember):
         :param nickname: 昵称
         :param remark: 备注
         """
-        self.name = nickname
+        self.nickname = nickname
         self.remark = remark
         super().__init__(bot, uid)
 
