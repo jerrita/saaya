@@ -108,7 +108,7 @@ class Quote(ChainObj):
 
 
 class Image(ChainObj):
-    def __init__(self, source: dict, ignoreId: bool = False, url: str = None):
+    def __init__(self, source: dict, ignoreId: bool = False, url: str = None, base64: str = None):
         if not ignoreId:
             self.imageId = source['imageId']
             
