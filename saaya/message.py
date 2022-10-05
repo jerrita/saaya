@@ -111,11 +111,17 @@ class Image(ChainObj):
     def __init__(self, source: dict, ignoreId: bool = False, url: str = None):
         if not ignoreId:
             self.imageId = source['imageId']
-        self.url = source['url'] if not url else url
+            
+        if base64:
+            self.base64 = base64
+        else:
+            self.url = source['url'] if 'url' in source else url
         super().__init__('Image')
 
     def getContent(self, console: bool = False) -> str:
         if console:
+            if hasattr(self, 'base64'):
+                return f'[Image: {self.base64[:5]}...]'
             return f'[Image: {self.url if not "imageId" in vars(self) else self.imageId}]'
         else:
             return '[图片]'
