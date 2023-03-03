@@ -1,8 +1,6 @@
 from saaya.utils import PluginManager
 from saaya.event import GroupMessage
-from saaya.session import Bot
 from saaya.message import *
-from saaya import config
 from functools import wraps
 import time
 from private import wsm
@@ -74,7 +72,7 @@ async def func_plug(event: GroupMessage):
                     for f in ft:
                         if f in func:
                             fla = True
-                            event.group.sendMessage('WAF！爬')
+                            event.group.sendMessage('WAF！')
                     if not fla:
                         func = func.replace('def', '@FuncWrapper\ndef')
                         funcList.append(compile(func, '', 'exec'))

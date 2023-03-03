@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 from .logger import logger
 from .member import *
 from .message import Message, Source
@@ -188,11 +190,11 @@ class Listener:
         if event.type in ['GroupMessage', 'FriendMessage'] and CmdManager.enable:
             CmdManager.handle_msg(event)
 
-        await PluginManager.broadCast(event)
+        PluginManager.broadCast(event)
 
     async def loop(self):
         uri = f'ws://{self.bot.protocol.addr}/all?verifyKey={self.bot.verifyKey}&sessionKey={self.bot.protocol.session}'
         async with websockets.connect(uri) as ws:
             while True:
                 msg = await ws.recv()
-                await self.processor(msg)
+                asyncio.create_task(self.processor(msg))

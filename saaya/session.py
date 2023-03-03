@@ -8,7 +8,6 @@ from .logger import logger
 from .member import Group, Friend, GroupMember, BaseMember
 from .message import Message, Source
 from .permission import Permission
-from saaya import config
 
 import asyncio
 
@@ -68,11 +67,6 @@ class Bot:
             t.build(msg)
             msg = t
 
-        if not config.feature['RepeatEnable'] and msg.getContent() == config.store['LastMessage']:
-            logger.warn('Disabled msg send because Repeat is Disabled.')
-            return
-
-        config.store['LastMessage'] = msg.getContent()
         self.protocol.send_group_message(group, msg)
 
     def unmute(self, group: Group, target: int):

@@ -25,21 +25,23 @@ class BaseManager:
             'MemberCardChangeEvent': []
         }
 
+    @staticmethod
+    async def monitor(task):
+        try:
+            await asyncio.wait(task)
+        except Exception as e:
+            if type(e) is not ValueError:  # 忽略空插件
+                logger.error(f'{type(e)}: {e}')
+
     def bind(self, bot: Bot):
         self.bot = bot
 
-    async def broadCast(self, event: Event):
+    def broadCast(self, event: Event):
         event_name = event.type
         if event_name in self.plugins:
             logger.debug(f'BroadCast {event} to {self.plugins[event_name]}')
-            task_list = []
             for plugin in self.plugins[event_name]:
-                task_list.append(asyncio.create_task(plugin(event)))
-            try:
-                await asyncio.wait(task_list)
-            except Exception as e:
-                if type(e) is not ValueError:  # 忽略空插件
-                    logger.error(f'{type(e)}: {e}')
+                asyncio.create_task(self.monitor(asyncio.create_task(plugin(event))))
 
     def registerEvent(self, eventName: str):
         """
