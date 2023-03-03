@@ -80,7 +80,7 @@ from saaya.event import GroupMessage, FriendMessage
 from typing import Union
 
 @CmdManager.registerCommand('hello', alias=['打招呼'], help='进行一个招呼的打')
-def hello(event: Union[GroupMessage, FriendMessage], param):
+async def hello(event: Union[GroupMessage, FriendMessage], param):
     event.sender.sendMessage('Hello world!')
 ```
 

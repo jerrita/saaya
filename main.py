@@ -3,7 +3,7 @@ from saaya.logger import logger
 from private import address, verifyKey, botqq
 import logging
 
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 if __name__ == '__main__':
     bot = Bot(address, verifyKey)  # 创建一个 Bot 实例
