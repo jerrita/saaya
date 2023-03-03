@@ -28,7 +28,7 @@ class BaseManager:
     @staticmethod
     async def monitor(task):
         try:
-            await asyncio.wait(task)
+            await task
         except Exception as e:
             if type(e) is not ValueError:  # 忽略空插件
                 logger.error(f'{type(e)}: {e}')
