@@ -81,6 +81,13 @@ class CmdProvider:
         }
         self.gen_map()
 
+    @staticmethod
+    async def monitor(task):
+        try:
+            await task
+        except Exception as e:
+            logger.error(f'CMD runtime error: {type(e)} => {e}')
+
     def handle_msg(self, event: Union[GroupMessage, FriendMessage]):
         msg = event.message.getContent()
         if len(msg) and msg[0] == self.starter:
@@ -94,7 +101,7 @@ class CmdProvider:
                         if caller == 'help':
                             self.gen_help(event)
                         else:
-                            self.funcs[caller]['func'](event, cmd)
+                            asyncio.create_task(self.monitor(self.funcs[caller]['func'](event, cmd)))
                     except Exception as e:
                         logger.error(f'Error exec command: {e}')
 
