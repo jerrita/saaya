@@ -1,3 +1,5 @@
+# DEPRECATED! PLEASE USE [Anon](https://github.com/jerrita/anon) INSTEAD!!!
+
 # Saaya Framework on Mirai
 
 > 目前最新版本为： `2.0.4 dev`
